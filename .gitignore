@@ -1,3 +1,4 @@
 /target
 .DS_Store
 .idea
+/spring-native-image/target
