@@ -6,7 +6,8 @@ use axum::{
     routing::get,
     Json, Router,
 };
-use serde::Deserialize;
+use axum_macros::debug_handler;
+use serde::{Deserialize, Serialize};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -15,21 +16,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .build()?;
     // build our application with a route
     let state = RequestState { client };
-    let app: Router<RequestState> = Router::new().route("/", get(handler));
-    //.with_state(state);
-
-    let response = client
-        .get("https://pokeapi.co/api/v2/pokemon/ditto")
-        .send()
-        .await?;
-    let ditto: Pokemon = response.json().await?;
-    println!("{ditto:?}");
+    let app = Router::new().route("/:pokemon_name", get(handler)).with_state(state);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
         .unwrap();
     println!("listening on {}", listener.local_addr()?);
-    axum::serve(listener, app.with_state(state)).await?;
+    axum::serve(listener, app).await?;
 
     Ok(())
 }
@@ -39,18 +32,18 @@ struct RequestState {
     client: reqwest::Client,
 }
 
+#[debug_handler]
 async fn handler(
     State(state): State<RequestState>,
     Path(pokemon_name): Path<String>,
-) -> Json<Pokemon> {
+) -> Result<Json<Pokemon>, AppError> {
     let response = state
         .client
         .get(format!("https://pokeapi.co/api/v2/pokemon/{pokemon_name}"))
         .send()
-        .await
-        .unwrap();
-    let pokemon = response.json().await.unwrap();
-    Json(pokemon)
+        .await?;
+    let pokemon = response.json().await?;
+    Ok(Json(pokemon))
 }
 
 #[derive(Debug)]
@@ -70,18 +63,18 @@ impl IntoResponse for AppError {
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 struct Pokemon {
     types: Vec<WrappedType>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 struct WrappedType {
     #[serde(rename = "type")]
     type_: Type,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 struct Type {
     name: String,
     url: String,
