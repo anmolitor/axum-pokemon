@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    console_subscriber::init();
     let client = reqwest::Client::builder()
         .timeout(Duration::from_secs(2))
         .build()?;
