@@ -146,7 +146,7 @@ With the out-of-the-box `native` profile active, you can invoke the `native:comp
 1. Run the following command:
 
     ```shell
-    ./mvnw native:compile -Pnative
+    ./mvnw clean native:compile -Pnative
     ```
 
    The `native` profile is used to generate a native executable for your platform. The native executable is called _benchmark-jibber_ and is generated in the _target_ directory.
