@@ -8,11 +8,13 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.IOException;
 import java.util.List;
 
-public record Pokemon (List<Type> types, List<Move> moves) {
+public record Pokemon (List<Type> types, List<Move> moves, Stats stats) {
     @JsonSerialize(using = TypeSerializer.class)
     public record Type(String typeName){}
     @JsonSerialize(using = MoveSerializer.class)
     public record Move(String moveName){}
+
+    public record Stats(int hp, int attack, int defense, int specialAttack, int specialDefense, int speed) {}
 
     public static class TypeSerializer extends JsonSerializer<Type> {
 

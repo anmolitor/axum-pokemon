@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @SpringBootApplication
@@ -49,8 +50,23 @@ public class DemoApplication {
                 .map(Pokemon.Type::new)
                 .toList();
 
+        Map<String, Integer> statMap = pokemonDto.stats().stream()
+                .collect(
+                        Collectors.toMap(stat -> stat.stat().name(),
+                                PokemonDTO.StatDTO::baseStat
+                        ));
 
-        return ResponseEntity.ok(new Pokemon(types, moves));
+        Pokemon.Stats stats = new Pokemon.Stats(
+                statMap.get("hp"),
+                statMap.get("attack"),
+                statMap.get("defense"),
+                statMap.get("special-attack"),
+                statMap.get("special-defense"),
+                statMap.get("speed")
+        );
+
+
+        return ResponseEntity.ok(new Pokemon(types, moves, stats));
     }
 
     public List<PokemonDTO.MoveIdentifierDTO> get4RandomMoves(PokemonDTO pokemon) {
