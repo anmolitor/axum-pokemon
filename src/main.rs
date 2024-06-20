@@ -10,8 +10,8 @@ use axum::{
     Json, Router,
 };
 use axum_macros::debug_handler;
-use serde::{Deserialize, Serialize};
-use crate::pokemon_api::{Pokemon, PokemonCachedClient};
+use crate::pokemon_api::PokemonCachedClient;
+use crate::pokemon::Pokemon;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -22,9 +22,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cached_client = PokemonCachedClient::new(&client);
 
     let state = RequestState { cached_client };
-    let app = Router::new().route("/:pokemon_name", get(handler)).with_state(state);
+    let app = Router::new().route("/:pokemon_name", get(generate_pokemon)).with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:4000")
         .await
         .unwrap();
     println!("listening on {}", listener.local_addr()?);
@@ -39,7 +39,7 @@ struct RequestState {
 }
 
 #[debug_handler]
-async fn handler(
+async fn generate_pokemon(
     State(state): State<RequestState>,
     Path(pokemon_name): Path<String>,
 ) -> Result<Json<Pokemon>, AppError> {
@@ -47,6 +47,8 @@ async fn handler(
         .cached_client
         .get_pokemon_by_name(pokemon_name)
         .await?;
+    let pokemon = pokemon.into();
+
     Ok(Json(pokemon))
 }
 

@@ -1,7 +1,7 @@
-use std::sync::Arc;
 use moka::future::Cache;
 use reqwest::Client;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use std::sync::Arc;
 
 #[derive(Clone)]
 pub struct PokemonCachedClient {
@@ -17,8 +17,16 @@ impl PokemonCachedClient {
         }
     }
 
-    pub async fn get_pokemon_by_name(&self, pokemon_name: String) -> Result<Pokemon, Arc<reqwest::Error>> {
-        self.cache.try_get_with(pokemon_name.clone(), self.fetch_pokemon_by_name(&pokemon_name)).await
+    pub async fn get_pokemon_by_name(
+        &self,
+        pokemon_name: String,
+    ) -> Result<Pokemon, Arc<reqwest::Error>> {
+        self.cache
+            .try_get_with(
+                pokemon_name.clone(),
+                self.fetch_pokemon_by_name(&pokemon_name),
+            )
+            .await
     }
 
     async fn fetch_pokemon_by_name(&self, pokemon_name: &str) -> Result<Pokemon, reqwest::Error> {
@@ -32,26 +40,43 @@ impl PokemonCachedClient {
     }
 }
 
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct Pokemon {
     pub types: Vec<WrappedType>,
     pub stats: Vec<Stats>,
+    pub moves: Vec<WrappedMove>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct WrappedType {
     #[serde(rename = "type")]
     pub type_: Type,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct Type {
-    name: String,
-    url: String,
+#[derive(Debug, Clone, Deserialize)]
+pub struct WrappedMove {
+    #[serde(rename = "move")]
+    pub move_: Move,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct Stats {
-    base_stat: u8,
+#[derive(Debug, Clone, Deserialize)]
+pub struct Type {
+    pub name: String,
 }
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct Move {
+    pub name: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct Stats {
+    pub base_stat: u8,
+    pub stat: WrappedStatName
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct WrappedStatName {
+    pub name: String
+}
+
