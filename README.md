@@ -1,6 +1,6 @@
 ## TODO
 - Das gleiche in Java (Spring Boot/Quarkus?)
-- Stats von Pokemon holen
+- Stats von Pokemon holen ✅
 - Stats auf Level 50 berechnen (ohne dvs/evs)
 - Tackle mit festem Angriffs/Levelwert auf das Pokemon aus dem Request
 - Regelmäßiges Benchmarken mit `wrk -t12 -c400 -d30s http://localhost:4000/bulbasaur` bzw. `wrk -t12 -c400 -d30s http://localhost:8080/bulbasaur`

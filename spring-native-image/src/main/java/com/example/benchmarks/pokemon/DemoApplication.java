@@ -66,7 +66,7 @@ public class DemoApplication {
         );
 
 
-        return ResponseEntity.ok(new Pokemon(types, moves, stats));
+        return ResponseEntity.ok(new Pokemon(types, moves, stats, 50));
     }
 
     public List<PokemonDTO.MoveIdentifierDTO> get4RandomMoves(PokemonDTO pokemon) {
