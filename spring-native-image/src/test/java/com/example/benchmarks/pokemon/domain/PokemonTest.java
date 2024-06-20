@@ -13,12 +13,18 @@ class PokemonTest {
         Pokemon garchomp = new Pokemon(
                 List.of(),
                 List.of(),
-                new Pokemon.Stats(108, 130, 95, 80, 85, 102),
+                new Stats<>(
+                        new Pokemon.Stat(108, 1, 24, 74),
+                        new Pokemon.Stat(130, 1.1f, 12, 190),
+                        new Pokemon.Stat(95, 1, 30, 91),
+                        new Pokemon.Stat(80, 0.9f, 16, 48),
+                        new Pokemon.Stat(85, 1, 23, 84),
+                        new Pokemon.Stat(102, 1, 5, 23)),
                 78
         );
 
-        Pokemon.Stats computedStats = garchomp.getComputedStats();
+        var computedStats = garchomp.getComputedStats();
 
-        assertEquals(computedStats, new Pokemon.Stats(289, 278, 193, 135, 171, 171));
+        assertEquals(computedStats, new Stats<>(289, 278, 193, 135, 171, 171));
     }
 }

@@ -1,8 +1,7 @@
 package com.example.benchmarks.pokemon;
 
-import com.example.benchmarks.pokemon.rest.MoveDTO;
-import com.example.benchmarks.pokemon.rest.PokemonDTO;
-import com.example.benchmarks.pokemon.rest.TypeDTO;
+import com.example.benchmarks.pokemon.domain.Pokemon;
+import com.example.benchmarks.pokemon.rest.*;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -22,6 +21,20 @@ public class PokemonApiClient {
     @Cacheable("getPokemonByName")
     public PokemonDTO getPokemonByName(String pokemonName) {
         return client.get().uri("/pokemon/{pokemonName}", pokemonName).retrieve().body(PokemonDTO.class);
+    }
+
+    @Cacheable("getNatures")
+    public NaturesDTO getNatures() {
+        return client.get().uri(builder -> builder.path("/nature").queryParam("limit", 1000).build())
+                .retrieve()
+                .body(NaturesDTO.class);
+    }
+
+    @Cacheable("getNature")
+    public NatureDTO getNature(Pokemon.Nature nature) {
+        return client.get().uri(builder -> builder.path("/nature").queryParam("limit", 1000).build())
+                .retrieve()
+                .body(NatureDTO.class);
     }
 
     public TypeDTO getTypeInformation(PokemonDTO.TypeDTO typeDTO) {

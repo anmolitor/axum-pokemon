@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.IOException;
 import java.util.List;
 
-public record Pokemon(List<Type> types, List<Move> moves, Stats baseStats, int level) {
+public record Pokemon(List<Type> types, List<Move> moves, Stats<Stat> baseStats, int level) {
     @JsonSerialize(using = TypeSerializer.class)
     public record Type(String typeName) {
     }
@@ -17,28 +17,33 @@ public record Pokemon(List<Type> types, List<Move> moves, Stats baseStats, int l
     public record Move(String moveName) {
     }
 
-    public record Stats(int hp, int attack, int defense, int specialAttack, int specialDefense, int speed) {
+    @JsonSerialize(using = NatureSerializer.class)
+    public record Nature(String natureName) {
     }
 
-    public Stats getComputedStats() {
-        return new Stats(
-                computeHpStat(baseStats.hp, 24, 74),
-                computeNormalStat(baseStats.attack, 12, 190, 1.1f),
-                computeNormalStat(baseStats.defense, 30, 91, 1),
-                computeNormalStat(baseStats.specialAttack, 16, 48, 0.9f),
-                computeNormalStat(baseStats.specialDefense, 23, 84, 1),
-                computeNormalStat(baseStats.speed, 5, 23, 1)
+
+    public record Stat(int base, float natureModifier, int dv, int ev) {
+    }
+
+    public Stats<Integer> getComputedStats() {
+        return new Stats<>(
+                computeHpStat(baseStats.hp()),
+                computeNormalStat(baseStats.attack()),
+                computeNormalStat(baseStats.defense()),
+                computeNormalStat(baseStats.specialAttack()),
+                computeNormalStat(baseStats.specialDefense()),
+                computeNormalStat(baseStats.speed())
         );
     }
 
-    private int computeHpStat(int hp, int dv, int ev) {
-        int computedEv = ev / 4;
-        return (2 * hp + dv + computedEv) * level / 100 + level +10;
+    private int computeHpStat(Stat hp) {
+        int computedEv = hp.ev / 4;
+        return (2 * hp.base + hp.dv + computedEv) * level / 100 + level + 10;
     }
 
-    private int computeNormalStat(int stat, int dv, int ev, float natureModifier) {
-        int computedEv = ev / 4;
-        return (int) ( ((2 * stat + dv + computedEv) * level / 100 + 5) * natureModifier);
+    private int computeNormalStat(Stat stat) {
+        int computedEv = stat.ev / 4;
+        return (int) (((2 * stat.base + stat.dv + computedEv) * level / 100 + 5) * stat.natureModifier);
     }
 
 
@@ -55,6 +60,14 @@ public record Pokemon(List<Type> types, List<Move> moves, Stats baseStats, int l
         @Override
         public void serialize(Move move, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
             jsonGenerator.writeString(move.moveName);
+        }
+    }
+
+    public static class NatureSerializer extends JsonSerializer<Nature> {
+
+        @Override
+        public void serialize(Nature nature, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+            jsonGenerator.writeString(nature.natureName);
         }
     }
 }
