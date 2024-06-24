@@ -14,12 +14,12 @@ public class DVGenerator {
 
     public Stats<Integer> generate() {
         return new Stats<>(
-                random.nextInt(MAX_DV),
-                random.nextInt(MAX_DV),
-                random.nextInt(MAX_DV),
-                random.nextInt(MAX_DV),
-                random.nextInt(MAX_DV),
-                random.nextInt(MAX_DV)
+                random.nextInt(MAX_DV + 1),
+                random.nextInt(MAX_DV + 1),
+                random.nextInt(MAX_DV + 1),
+                random.nextInt(MAX_DV + 1),
+                random.nextInt(MAX_DV + 1),
+                random.nextInt(MAX_DV + 1)
         );
     }
 }

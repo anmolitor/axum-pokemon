@@ -32,7 +32,7 @@ public class PokemonApiClient {
 
     @Cacheable("getNature")
     public NatureDTO getNature(Pokemon.Nature nature) {
-        return client.get().uri(builder -> builder.path("/nature").queryParam("limit", 1000).build())
+        return client.get().uri(builder -> builder.path("/nature/" + nature.natureName()).queryParam("limit", 1000).build())
                 .retrieve()
                 .body(NatureDTO.class);
     }

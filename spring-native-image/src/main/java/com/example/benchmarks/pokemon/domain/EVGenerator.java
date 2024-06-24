@@ -26,17 +26,6 @@ public class EVGenerator {
                 totalEVsDistributed += evsToDistribute;
             }
         }
-        shuffleArray(evs);
         return new Stats<>(evs[0], evs[1], evs[2], evs[3], evs[4], evs[5]);
-    }
-
-    static void shuffleArray(int[] ar) {
-        for (int i = ar.length - 1; i > 0; i--) {
-            int index = random.nextInt(i + 1);
-            // Simple swap
-            int a = ar[index];
-            ar[index] = ar[i];
-            ar[i] = a;
-        }
     }
 }
