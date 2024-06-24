@@ -2,7 +2,7 @@ mod pokemon;
 mod pokemon_api;
 mod stats;
 
-use std::{sync::Arc, time::Duration};
+use std::{collections::HashMap, sync::Arc, time::Duration};
 
 use crate::pokemon::Pokemon;
 use crate::pokemon_api::PokemonCachedClient;

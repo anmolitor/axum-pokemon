@@ -1,4 +1,4 @@
-use rand::{Rng, RngCore};
+use rand::{Rng, RngCore, SeedableRng};
 use serde::Serialize;
 
 #[derive(Debug, Default, Serialize, Clone)]
@@ -25,9 +25,11 @@ pub fn generate_evs() -> Stats<u8> {
     while total_evs_distributed < MAX_TOTAL_EVS {
         let stat_index = rng.gen_range(0..6);
 
-        let evs_to_distribute = rng.gen_range(1..=MAX_EV - stats[stat_index]);
-        stats[stat_index] += evs_to_distribute;
-        total_evs_distributed += u16::from(evs_to_distribute);
+        if stats[stat_index] < MAX_EV {
+            let evs_to_distribute = rng.gen_range(1..=MAX_EV - stats[stat_index]);
+            stats[stat_index] += evs_to_distribute;
+            total_evs_distributed += u16::from(evs_to_distribute);
+        }
     }
 
     let [hp, attack, defense, special_attack, special_defense, speed] = stats;
